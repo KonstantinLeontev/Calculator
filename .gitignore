@@ -1,0 +1,25 @@
+# ignore all files
+*
+
+# unignore parent folder
+!/**/
+
+# unignore all sources files
+!*.cpp
+!*.h
+
+# unignore vs project files
+!*.vcxproj
+!*.sln
+
+# reinclude readme file
+!README
+
+# reinclude .gitignore
+!.gitignore
+
+# reinclude raw samples for testing
+!*.raw
+
+# reinclude PDF description
+!*.pdf
