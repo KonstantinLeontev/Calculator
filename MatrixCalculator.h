@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "resource.h"
 #include "afxcmn.h"
+#include "Matrix.h"
 
 class MatrixCalculator : public CDialog
 {
@@ -15,14 +16,23 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual BOOL OnInitDialog();
-	void MatrixCalculator::OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+	void OnCancel(); // Prevents dialog from colsing when ESC pressed.
+	void OnOK(); // Prevents dialog from colsing when Enter pressed.
+	void Multiplication(); // Calculate Matrix A x Matrix B.
 
 public:
 	DECLARE_MESSAGE_MAP()
-	afx_msg void OnLvnItemchangedMatrix1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMClickA(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMClickB(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg LRESULT OnNotifyDescriptionEdited(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnBnClickedButtonClearA();
+	afx_msg void OnBnClickedButtonClearB();
+	afx_msg void OnBnClickedButtonClearResult();
+	afx_msg void OnBnClickedButtonEqual();
 
 private:
-	CListCtrl m_clMatrix1;
-	CImageList m_ciImageList; // This one is only for changing list's row height.
+	Matrix m_clMatrixA;
+	Matrix m_clMatrixB;
+	Matrix m_clMatrixResult;	
 };
 

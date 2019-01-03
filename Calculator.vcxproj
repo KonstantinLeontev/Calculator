@@ -145,6 +145,8 @@
   <ItemGroup>
     <ClInclude Include="CalculatorApp.h" />
     <ClInclude Include="CalculatorMainWindow.h" />
+    <ClInclude Include="CInPlaceEdit.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="MatrixCalculator.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -154,6 +156,8 @@
   <ItemGroup>
     <ClCompile Include="CalculatorApp.cpp" />
     <ClCompile Include="CalculatorMainWindow.cpp" />
+    <ClCompile Include="CInPlaceEdit.cpp" />
+    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixCalculator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
