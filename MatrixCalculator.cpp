@@ -7,6 +7,8 @@ void MatrixCalculator::DoDataExchange(CDataExchange * pDX)
 	DDX_Control(pDX, IDC_MATRIX_A, m_clMatrixA);
 	DDX_Control(pDX, IDC_MATRIX_B, m_clMatrixB);
 	DDX_Control(pDX, IDC_MATRIX_RESULT, m_clMatrixResult);
+	DDX_Control(pDX, IDC_EDIT_DEFAULT_VALUE_A, m_cEditDefaultValueA);
+	DDX_Control(pDX, IDC_EDIT_DEFAULT_VALUE_B, m_cEditDefaultValueB);
 }
 
 BOOL MatrixCalculator::OnInitDialog()
@@ -17,6 +19,11 @@ BOOL MatrixCalculator::OnInitDialog()
 	m_clMatrixA.Initialize();
 	m_clMatrixB.Initialize();
 	m_clMatrixResult.Initialize();
+	// Default value for matrix cells.
+	m_csDefaultValueA = "0";
+	m_cEditDefaultValueA.SetWindowText(m_csDefaultValueA);
+	m_csDefaultValueB = "0";
+	m_cEditDefaultValueB.SetWindowText(m_csDefaultValueB);
 
 	return 0;
 }
@@ -28,6 +35,8 @@ BEGIN_MESSAGE_MAP(MatrixCalculator, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_B, &MatrixCalculator::OnBnClickedButtonClearB)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAR_RESULT, &MatrixCalculator::OnBnClickedButtonClearResult)
 	ON_BN_CLICKED(IDC_BUTTON_EQUAL, &MatrixCalculator::OnBnClickedButtonEqual)
+	ON_EN_CHANGE(IDC_EDIT_DEFAULT_VALUE_A, &MatrixCalculator::OnEnChangeEditDefaultValueA)
+	ON_EN_CHANGE(IDC_EDIT_DEFAULT_VALUE_B, &MatrixCalculator::OnEnChangeEditDefaultValueB)
 END_MESSAGE_MAP()
 
 void MatrixCalculator::OnNMClickA(NMHDR *pNMHDR, LRESULT *pResult)
@@ -163,13 +172,13 @@ void MatrixCalculator::OnCancel()
 
 void MatrixCalculator::OnBnClickedButtonClearA()
 {
-	m_clMatrixA.Clear("0");
+	m_clMatrixA.Clear(m_csDefaultValueA);
 }
 
 
 void MatrixCalculator::OnBnClickedButtonClearB()
 {
-	m_clMatrixB.Clear("0");
+	m_clMatrixB.Clear(m_csDefaultValueB);
 }
 
 
@@ -182,4 +191,15 @@ void MatrixCalculator::OnBnClickedButtonClearResult()
 void MatrixCalculator::OnBnClickedButtonEqual()
 {
 	Multiplication();
+}
+
+void MatrixCalculator::OnEnChangeEditDefaultValueA()
+{
+	m_cEditDefaultValueA.GetWindowText(m_csDefaultValueA);
+}
+
+
+void MatrixCalculator::OnEnChangeEditDefaultValueB()
+{
+	m_cEditDefaultValueB.GetWindowText(m_csDefaultValueB);
 }

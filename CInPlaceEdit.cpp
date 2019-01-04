@@ -42,6 +42,8 @@ void CInPlaceEdit::OnNcDestroy()
 // Called for nonsystem character keystrokes.
 void CInPlaceEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	// nChar contains the character code value of the key, not a virtual code!
+	// VK_ESCAPE and VK_RETURN matches ASCII code.
 	if (nChar == VK_ESCAPE || nChar == VK_RETURN)
 	{
 		if (nChar == VK_ESCAPE)
@@ -53,17 +55,56 @@ void CInPlaceEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 		return;
 	}
 
-	// Filter for non-digit characters or minus, dot or comma.
-	if ((nChar < 0x30 || nChar > 0x39) /*&& (nChar != VK_OEM_MINUS || nChar != VK_OEM_COMMA || nChar != VK_OEM_PERIOD)*/)
+	// Filter for non-digit characters or minus or dot.
+	if ((nChar < 0x30 || nChar > 0x39) && nChar != CHAR_MINUS && nChar != CHAR_PERIOD)
 	{
 		return;
 	}
 
-	CEdit::OnChar(nChar, nRepCnt, nFlags);
-
-	// Resize edit control if needed 
+	// Get the text that is already inside the edit box.
 	CString str;
 	GetWindowText(str);
+
+	// Ignore all '-' except first place.
+	if (nChar == CHAR_MINUS)
+	{
+		// First check for other minus in the string.
+		int iFindResult = str.Find('-');
+		if (iFindResult != -1)
+		{
+			// There's already one '-' here.
+			return;
+		}
+		else
+		{
+			// Check current caret position.
+			int iCurChar = CharFromPos(GetCaretPos());
+			int iCharIndex = LOWORD(iCurChar);
+			if (iCharIndex)
+			{
+				// It's not a first position.
+				return;
+			}
+		}	
+	}
+
+	// Ignore all '.' except first one.
+	if (nChar == CHAR_PERIOD)
+	{
+		// Check for other dots in the string.
+		int iFindResult = str.Find('.');
+		if (iFindResult != -1)
+		{
+			// There's already one '.' here.
+			return;
+		}
+	}
+
+	CEdit::OnChar(nChar, nRepCnt, nFlags);
+	// Get the updated text again.
+	GetWindowText(str);
+
+	// Resize edit control if needed 
 	CWindowDC dc(this);
 	CFont *pFont = GetParent()->GetFont();
 	CFont *pFontDC = dc.SelectObject(pFont);

@@ -29,10 +29,17 @@ public:
 	afx_msg void OnBnClickedButtonClearB();
 	afx_msg void OnBnClickedButtonClearResult();
 	afx_msg void OnBnClickedButtonEqual();
+	afx_msg void OnEnChangeEditDefaultValueA();
+	afx_msg void OnEnChangeEditDefaultValueB();
 
 private:
 	Matrix m_clMatrixA;
 	Matrix m_clMatrixB;
-	Matrix m_clMatrixResult;	
+	Matrix m_clMatrixResult;
+	CString m_csDefaultValueA;
+	CString m_csDefaultValueB;
+public:
+	CEdit m_cEditDefaultValueA;
+	CEdit m_cEditDefaultValueB;
 };
 

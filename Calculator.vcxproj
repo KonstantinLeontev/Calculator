@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CalculatorApp.h" />
+    <ClInclude Include="CalculatorGlobals.h" />
     <ClInclude Include="CalculatorMainWindow.h" />
     <ClInclude Include="CInPlaceEdit.h" />
     <ClInclude Include="Matrix.h" />
