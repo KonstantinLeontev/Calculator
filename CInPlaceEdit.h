@@ -1,3 +1,9 @@
+//*************************************************************************************
+// Edit control for matrix grid.
+// ----------------------------
+// Edit box for user input creates on the fly for each click on the matrix cell.
+//*************************************************************************************
+
 #pragma once
 #include "afxwin.h"
 #include "resource.h"
@@ -7,7 +13,7 @@ class CInPlaceEdit : public CEdit
 {
 public:
 	CInPlaceEdit(int iRow, int iColumn, CString csInitText)
-		: m_iRow(iRow), m_iColumn(iColumn), m_bESC(FALSE), m_sInitText(csInitText), m_bFirstCharFlag(TRUE), m_bDotCharFlag(TRUE) {}
+		: m_iRow(iRow), m_iColumn(iColumn), m_bESC(FALSE), m_sInitText(csInitText) {}
 
 public:
 	// Determines whether certain key strokes make it to the edit control.
@@ -31,7 +37,5 @@ private:
 	int m_iColumn;
 	CString m_sInitText;
 	BOOL m_bESC;
-	BOOL m_bFirstCharFlag; // Need this to allow '-' char input if it goes to the first place.
-	BOOL m_bDotCharFlag; // Allows put '.' only once as decimal separator.
 };
 

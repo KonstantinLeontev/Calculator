@@ -2,6 +2,12 @@
 #include "CalculatorMainWindow.h"
 #include "MatrixCalculator.h"
 
+//------------------------------------------------------------------
+// Initialization
+//------------------------------------------------------------------
+
+// Connect controls with corresponding member variables, so we don't need
+// explicitly get control from dialog.
 void CalculatorMainWindow::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
@@ -28,6 +34,7 @@ void CalculatorMainWindow::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_MATRIXCALC, m_cbtnMatrixCalc);
 }
 
+// Initial values for fonts, colors and other style.
 BOOL CalculatorMainWindow::OnInitDialog()
 {
 	CDialog::OnInitDialog();
@@ -61,6 +68,7 @@ BOOL CalculatorMainWindow::OnInitDialog()
 		0, 0, 0, 0, L"Lucida Console");
 	m_ceDisplay.SetFont(&m_cfCalcDisplayFont);
 	m_ceDisplay.SetReadOnly();
+
 	// Matrix Calc button
 	m_cfCalcButtonMatrixFont.CreateFont(16, 0, 0, 0, FW_ULTRALIGHT, 0, 0, 0, DEFAULT_CHARSET,
 		0, 0, 0, 0, L"Lucida Console");
@@ -148,6 +156,7 @@ BOOL CalculatorMainWindow::OnInitDialog()
 }
 
 // Translate keyboard message to dialog. That's a litle bit easier then custom CEdit class with input processing on its side.
+// Each allowed key from user keyboard will be processed by corresponding handler for GUI key.
 BOOL CalculatorMainWindow::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
@@ -196,56 +205,39 @@ BOOL CalculatorMainWindow::PreTranslateMessage(MSG* pMsg)
 	return CDialog::PreTranslateMessage(pMsg);
 }
 
-
-//------------------------------------------------------------------
-// Start Buttons
-//------------------------------------------------------------------
-void CalculatorMainWindow::OnBnClickedBtnBackspace()
+// Set background color for calculator's display.
+HBRUSH CalculatorMainWindow::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
-	int iLength = m_csDigitDisplay.GetLength();
-	// Delete last character.
-	if (iLength > 1)
-	{
-		// First we must check for math operation in last character.
-		char cLastChar = m_csDigitDisplay.GetAt(iLength - 1);
-		if (cLastChar == '/' || cLastChar == '*' || cLastChar == '-' || cLastChar == '+')
-		{
-			// Set current operation to NONE for preventing unexpected calculations.
-			m_eMathOperation = NONE;
-			// Clear the right operand.
-			m_csRightOperand = "";
-		}
-		m_csDigitDisplay.Delete(iLength - 1);
+	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
 
-		// Trim the right operand if it's the case.
-		if (m_eMathOperation != NONE)
+	switch (nCtlColor)
+	{
+		// Case for edit mode. Stay here for those case if I allow user edit display's string.
+	case CTLCOLOR_EDIT:
+		if (pWnd->GetDlgCtrlID() == IDC_EDIT_DISPLAY)
 		{
-			int iLenghtRight = m_csRightOperand.GetLength();
-			if (iLenghtRight > 0)
-			{
-				m_csRightOperand.Delete(iLenghtRight - 1);
-			}
+			pDC->SetBkColor(m_crfDisplayBkColor);
+			//pDC->SetBkColor(RGB(255, 255, 255));
+			return (HBRUSH)(m_hbrushDisplay->GetSafeHandle());
+		}
+		// Case for read-only display. CTLCOLOR_EDIT doesn't work for read-only edit control.
+	case CTLCOLOR_STATIC:
+		if (pWnd->GetDlgCtrlID() == IDC_EDIT_DISPLAY)
+		{
+			pDC->SetBkColor(m_crfDisplayBkColor);
+			//pDC->SetBkColor(RGB(255, 255, 255));
+			return (HBRUSH)(m_hbrushDisplay->GetSafeHandle());
 		}
 	}
-	// If there are only one last number, just change it to zero.
-	else
-	{
-		m_csDigitDisplay = "0";
-	}
-	UpdateData(FALSE);
+
+	return hbr;
 }
 
-void CalculatorMainWindow::OnBnClickedBtnClear()
-{
-	// Change things to default for a next work.
-	m_csDigitDisplay = "0";
-	m_csLeftOperand = "";
-	m_csRightOperand = "";
-	m_eMathOperation = NONE;
-	m_bDisplayResult = false;
-	UpdateData(FALSE);
-}
+//------------------------------------------------------------------
+// Buttons handlers
+//------------------------------------------------------------------
 
+// Add character argument to the end of display string and left or right operand.
 void CalculatorMainWindow::AddDigitToDisplay(char cDigit)
 {
 	// Check for displayng result previouse calculation.
@@ -311,66 +303,174 @@ void CalculatorMainWindow::AddDigitToDisplay(char cDigit)
 	UpdateData(FALSE);
 }
 
+// Backspace button - removes last character from display string.
+void CalculatorMainWindow::OnBnClickedBtnBackspace()
+{
+	int iLength = m_csDigitDisplay.GetLength();
+	// Delete last character.
+	if (iLength > 1)
+	{
+		// First we must check for math operation in last character.
+		char cLastChar = m_csDigitDisplay.GetAt(iLength - 1);
+		if (cLastChar == '/' || cLastChar == '*' || cLastChar == '-' || cLastChar == '+')
+		{
+			// Set current operation to NONE for preventing unexpected calculations.
+			m_eMathOperation = NONE;
+			// Clear the right operand.
+			m_csRightOperand = "";
+		}
+		m_csDigitDisplay.Delete(iLength - 1);
+
+		// Trim the right operand if it's the case.
+		if (m_eMathOperation != NONE)
+		{
+			int iLenghtRight = m_csRightOperand.GetLength();
+			if (iLenghtRight > 0)
+			{
+				m_csRightOperand.Delete(iLenghtRight - 1);
+			}
+		}
+	}
+	// If there are only one last number, just change it to zero.
+	else
+	{
+		m_csDigitDisplay = "0";
+	}
+	UpdateData(FALSE);
+}
+
+// Clear button - set '0' to display, drop everithing to default values.
+void CalculatorMainWindow::OnBnClickedBtnClear()
+{
+	// Change things to default for a next work.
+	m_csDigitDisplay = "0";
+	m_csLeftOperand = "";
+	m_csRightOperand = "";
+	m_eMathOperation = NONE;
+	m_bDisplayResult = false;
+	UpdateData(FALSE);
+}
+
+// Button '0'.
 void CalculatorMainWindow::OnBnClickedBtn0()
 {
 	AddDigitToDisplay('0');
 }
 
+// Button '1'.
 void CalculatorMainWindow::OnBnClickedBtn1()
 {
 	AddDigitToDisplay('1');
 }
 
+// Button '2'.
 void CalculatorMainWindow::OnBnClickedBtn2()
 {
 	AddDigitToDisplay('2');
 }
 
-
+// Button '3'.
 void CalculatorMainWindow::OnBnClickedBtn3()
 {
 	AddDigitToDisplay('3');
 }
 
-
+// Button '4'.
 void CalculatorMainWindow::OnBnClickedBtn4()
 {
 	AddDigitToDisplay('4');
 }
 
-
+// Button '5'.
 void CalculatorMainWindow::OnBnClickedBtn5()
 {
 	AddDigitToDisplay('5');
 }
 
-
+// Button '6'.
 void CalculatorMainWindow::OnBnClickedBtn6()
 {
 	AddDigitToDisplay('6');
 }
 
-
+// Button '7'.
 void CalculatorMainWindow::OnBnClickedBtn7()
 {
 	AddDigitToDisplay('7');
 }
 
-
+// Button '8'.
 void CalculatorMainWindow::OnBnClickedBtn8()
 {
 	AddDigitToDisplay('8');
 }
 
-
+// Button '9'.
 void CalculatorMainWindow::OnBnClickedBtn9()
 {
 	AddDigitToDisplay('9');
 }
 
+// Button '.' - add period as a decimal separator. 
 void CalculatorMainWindow::OnBnClickedBtnComma()
 {
 	AddDigitToDisplay('.');
+}
+
+// Button '/'.
+void CalculatorMainWindow::OnBnClickedBtnDivision()
+{
+	AddMathOperation(DIV);
+}
+
+// Button '*'.
+void CalculatorMainWindow::OnBnClickedBtnProduct()
+{
+	AddMathOperation(MULT);
+}
+
+// Button '-'.
+void CalculatorMainWindow::OnBnClickedBtnMinus()
+{
+	AddMathOperation(SUB);
+}
+
+// Button '+'.
+void CalculatorMainWindow::OnBnClickedBtnPlus()
+{
+	AddMathOperation(SUM);
+}
+
+// Button '=' - it's a start for actaul calculation.
+void CalculatorMainWindow::OnBnClickedBtnEqual()
+{
+	PerformMathOperation();
+}
+
+//------------------------------------------------------------------
+// Calculations
+//------------------------------------------------------------------
+
+// Set the type if math operation and perform previous one if exists.
+void CalculatorMainWindow::AddMathOperation(MATH eOperation)
+{
+	// When previous calculation isn't finished yet.
+	if (m_eMathOperation != NONE)
+	{
+		// Then we must perform exist operation first.
+		PerformMathOperation();
+	}
+	m_eMathOperation = eOperation;
+	m_csLeftOperand = m_csDigitDisplay;
+	switch (eOperation)
+	{
+	case DIV: m_csDigitDisplay += " / "; break;
+	case MULT: m_csDigitDisplay += " * "; break;
+	case SUB: m_csDigitDisplay += " - "; break;
+	case SUM: m_csDigitDisplay += " + "; break;
+	default: MessageBox(NULL, L"An arithmetic operation is not defined.", MB_OK); break;
+	}
+	UpdateData(FALSE);
 }
 
 // All math operations we do here.
@@ -411,83 +511,9 @@ void CalculatorMainWindow::PerformMathOperation()
 	UpdateData(FALSE);
 }
 
-void CalculatorMainWindow::AddMathOperation(MATH eOperation)
-{
-	// When previous calculation isn't finished yet.
-	if (m_eMathOperation != NONE)
-	{
-		// Then we must perform exist operation first.
-		PerformMathOperation();
-	}
-	m_eMathOperation = eOperation;
-	m_csLeftOperand = m_csDigitDisplay;
-	switch (eOperation)
-	{
-	case DIV: m_csDigitDisplay += " / "; break;
-	case MULT: m_csDigitDisplay += " * "; break;
-	case SUB: m_csDigitDisplay += " - "; break;
-	case SUM: m_csDigitDisplay += " + "; break;
-	default: MessageBox(NULL, L"An arithmetic operation is not defined.", MB_OK); break;
-	}
-	UpdateData(FALSE);
-}
-
-void CalculatorMainWindow::OnBnClickedBtnDivision()
-{
-	AddMathOperation(DIV);
-}
-
-
-void CalculatorMainWindow::OnBnClickedBtnProduct()
-{
-	AddMathOperation(MULT);
-}
-
-
-void CalculatorMainWindow::OnBnClickedBtnMinus()
-{
-	AddMathOperation(SUB);
-}
-
-
-void CalculatorMainWindow::OnBnClickedBtnPlus()
-{
-	AddMathOperation(SUM);
-}
-
-
-void CalculatorMainWindow::OnBnClickedBtnEqual()
-{
-	PerformMathOperation();
-}
-
-
-HBRUSH CalculatorMainWindow::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
-{
-	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
-
-	switch (nCtlColor)
-	{
-	// Case for edit mode.
-	case CTLCOLOR_EDIT:
-		if (pWnd->GetDlgCtrlID() == IDC_EDIT_DISPLAY)
-		{
-			pDC->SetBkColor(m_crfDisplayBkColor);
-			//pDC->SetBkColor(RGB(255, 255, 255));
-			return (HBRUSH)(m_hbrushDisplay->GetSafeHandle());
-		}
-	// Case for read-only display.
-	case CTLCOLOR_STATIC:
-		if (pWnd->GetDlgCtrlID() == IDC_EDIT_DISPLAY)
-		{
-			pDC->SetBkColor(m_crfDisplayBkColor);
-			//pDC->SetBkColor(RGB(255, 255, 255));
-			return (HBRUSH)(m_hbrushDisplay->GetSafeHandle());
-		}
-	}
-
-	return hbr;
-}
+//------------------------------------------------------------------
+// Child dialogs
+//------------------------------------------------------------------
 
 // Open second dialog with matrix calculator inside.
 void CalculatorMainWindow::OnBnClickedBtnMatrixcalc()

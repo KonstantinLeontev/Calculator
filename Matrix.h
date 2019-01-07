@@ -1,3 +1,11 @@
+//*************************************************************************************
+// Editable matrix grid.
+// ---------------------
+// A CList control in report mode creates a matrix grid with column's headers in the 
+// first row and row labels in the first column. Edit box for user input creates on the
+// fly for each click on the matrix cell.
+//*************************************************************************************
+
 #pragma once
 #include "afxcmn.h"
 #include <memory>

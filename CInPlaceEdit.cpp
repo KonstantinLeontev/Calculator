@@ -1,5 +1,26 @@
 #include "CInPlaceEdit.h"
 
+//------------------------------------------------------------------
+// Initialization
+//------------------------------------------------------------------
+
+// Create and setup an edit control.
+int CInPlaceEdit::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CEdit::OnCreate(lpCreateStruct) == -1)
+	{
+		return -1;
+	}
+
+	// Set the proper font  
+	CFont* font = GetParent()->GetFont();
+	SetFont(font);
+	SetWindowText(m_sInitText);
+	SetFocus();
+	SetSel(0, -1);
+	return 0;
+}
+
 BEGIN_MESSAGE_MAP(CInPlaceEdit, CEdit)
 	ON_WM_KILLFOCUS()
 	ON_WM_NCDESTROY()
@@ -7,7 +28,13 @@ BEGIN_MESSAGE_MAP(CInPlaceEdit, CEdit)
 	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
+//------------------------------------------------------------------
+// Message handlers
+//------------------------------------------------------------------
+
 // Translate window message before they are dispatched to the TranslateMessage and DispatchMessage.
+// Escape, delete and return keys normally handle by dialog, but in this case they must be processed
+// inside the edit control.
 BOOL CInPlaceEdit::PreTranslatedMessage(MSG * pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
@@ -16,7 +43,7 @@ BOOL CInPlaceEdit::PreTranslatedMessage(MSG * pMsg)
 		{
 			::TranslateMessage(pMsg);
 			::DispatchMessage(pMsg);
-			return TRUE;
+			return TRUE; // Message processing stops here.
 		}
 	}
 	return CEdit::PreTranslateMessage(pMsg);
@@ -156,22 +183,4 @@ void CInPlaceEdit::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 			GetParent()->GetDlgCtrlID(),
 			(LPARAM)&dispinfo);
 	}
-}
-
-// Called when application requests the window be created by calling the Create/CreateEx
-// member function.
-int CInPlaceEdit::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
-	if (CEdit::OnCreate(lpCreateStruct) == -1)
-	{
-		return -1;
-	}
-
-	// Set the proper font  
-	CFont* font = GetParent()->GetFont();
-	SetFont(font);
-	SetWindowText(m_sInitText);
-	SetFocus();
-	SetSel(0, -1);
-	return 0;
 }

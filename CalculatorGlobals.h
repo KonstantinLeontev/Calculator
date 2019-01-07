@@ -1,4 +1,7 @@
-// Globals for character's codes.
+//************************************************************************
+// Globals for character's codes. We need them to translate WM_KEYDOWN and
+// WM_ONCHAR messages.
+//************************************************************************
 
 // Digits
 #define CHAR_0 0x30

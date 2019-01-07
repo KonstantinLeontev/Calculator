@@ -1,7 +1,10 @@
-//******************************************************************************
+//*************************************************************************************
 // The main window of the Calculator.
-//
-//******************************************************************************
+// Incapsulate all window controls handlers and style. All math calculations related to
+// those controls perform inside the class.
+// Entry point for matrix calculator's dialog is here as well.
+//*************************************************************************************
+
 #pragma once
 #include <afxwin.h>
 #include <afxbutton.h>

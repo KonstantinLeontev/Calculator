@@ -1,3 +1,16 @@
+//*************************************************************************************
+// Matrix calculator dialog.
+// -------------------------
+// Only for multiplying two 4x4 matricies at the moment.
+// There's an ability to clear and set initial values for operands and clear for result
+// matrix.
+// A CList control in report mode creates a matrix grid with column's headers in the 
+// first row and row labels in the first column. Edit box for user input creates on the
+// fly for each click on the matrix cell.
+// Base implementation was borrowed from "Editable MFC List Controls" post:
+// https://www.technical-recipes.com/2014/making-a-mfc-list-control-editable/.
+//*************************************************************************************
+
 #pragma once
 #include "afxwin.h"
 #include "resource.h"
