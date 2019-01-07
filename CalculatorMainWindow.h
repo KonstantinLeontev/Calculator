@@ -33,6 +33,9 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual BOOL OnInitDialog();
 
+	// Translate keyboard message to dialog. That's a litle bit easier then custom CEdit class with input processing on its side.
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+
 public:
 	DECLARE_MESSAGE_MAP();
 
@@ -96,6 +99,8 @@ private:
 	CMFCButton m_buttonBackspace;
 	CMFCButton m_buttonClear;
 	CMFCButton m_cbtnMatrixCalc;
+
+	// Edit text box - display
 	CEdit m_ceDisplay;
 
 	//Colors

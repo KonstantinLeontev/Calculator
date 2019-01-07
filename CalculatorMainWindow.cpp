@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CalculatorMainWindow.h"
 #include "MatrixCalculator.h"
 
@@ -55,11 +55,12 @@ BOOL CalculatorMainWindow::OnInitDialog()
 	m_buttonEqual.SetFont(&m_cfCalcButtonFont);
 	m_buttonBackspace.SetFont(&m_cfCalcButtonFont);
 	m_buttonClear.SetFont(&m_cfCalcButtonFont);
-	//m_cbtnMatrixCalc.SetFont(&m_cfCalcButtonFont);
+
 	// Display
 	m_cfCalcDisplayFont.CreateFont(22, 0, 0, 0, FW_ULTRALIGHT, 0, 0, 0, DEFAULT_CHARSET,
 		0, 0, 0, 0, L"Lucida Console");
 	m_ceDisplay.SetFont(&m_cfCalcDisplayFont);
+	m_ceDisplay.SetReadOnly();
 	// Matrix Calc button
 	m_cfCalcButtonMatrixFont.CreateFont(16, 0, 0, 0, FW_ULTRALIGHT, 0, 0, 0, DEFAULT_CHARSET,
 		0, 0, 0, 0, L"Lucida Console");
@@ -145,6 +146,56 @@ BOOL CalculatorMainWindow::OnInitDialog()
 
 	return TRUE;
 }
+
+// Translate keyboard message to dialog. That's a litle bit easier then custom CEdit class with input processing on its side.
+BOOL CalculatorMainWindow::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		// Get the virtual code from message.
+		WPARAM nCode = pMsg->wParam;
+		// Convert virtual code into a character.
+		UINT nChar = MapVirtualKeyA(nCode, MAPVK_VK_TO_CHAR);
+
+		// Filter for non-digit characters or minus, or dot, or...
+		if ((nChar < CHAR_0 || nChar > CHAR_9)
+			&& nChar != CHAR_ASTERISK && nChar != CHAR_PLUS && nChar != CHAR_COMMA && nChar != CHAR_MINUS && nChar != CHAR_PERIOD && nChar != CHAR_SLASH
+			&& nChar != VK_ESCAPE && nChar != VK_RETURN && nChar != CHAR_EQUALS && nChar != VK_BACK)
+		{
+			return CDialog::PreTranslateMessage(pMsg);
+		}
+
+		// Set method for each key.
+		switch (nChar)
+		{
+		case CHAR_0: OnBnClickedBtn0(); break;
+		case CHAR_1: OnBnClickedBtn1(); break;
+		case CHAR_2: OnBnClickedBtn2(); break;
+		case CHAR_3: OnBnClickedBtn3(); break;
+		case CHAR_4: OnBnClickedBtn4(); break;
+		case CHAR_5: OnBnClickedBtn5(); break;
+		case CHAR_6: OnBnClickedBtn6(); break;
+		case CHAR_7: OnBnClickedBtn7(); break;
+		case CHAR_8: OnBnClickedBtn8(); break;
+		case CHAR_9: OnBnClickedBtn9(); break;
+		case CHAR_ASTERISK: OnBnClickedBtnProduct(); break;
+		case CHAR_PLUS:		OnBnClickedBtnPlus(); break;
+		case CHAR_COMMA:	OnBnClickedBtnComma(); break;
+		case CHAR_MINUS:	OnBnClickedBtnMinus(); break;
+		case CHAR_PERIOD:	OnBnClickedBtnComma(); break;
+		case CHAR_SLASH:	OnBnClickedBtnDivision(); break;
+		case VK_ESCAPE:		OnBnClickedBtnClear(); break;
+		case VK_RETURN:		OnBnClickedBtnEqual(); break;
+		case CHAR_EQUALS:	OnBnClickedBtnEqual(); break;
+		case VK_BACK:		OnBnClickedBtnBackspace(); break;
+		}
+
+		// Don't do more with it.
+		return TRUE;
+	}
+	return CDialog::PreTranslateMessage(pMsg);
+}
+
 
 //------------------------------------------------------------------
 // Start Buttons
@@ -417,7 +468,16 @@ HBRUSH CalculatorMainWindow::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	switch (nCtlColor)
 	{
+	// Case for edit mode.
 	case CTLCOLOR_EDIT:
+		if (pWnd->GetDlgCtrlID() == IDC_EDIT_DISPLAY)
+		{
+			pDC->SetBkColor(m_crfDisplayBkColor);
+			//pDC->SetBkColor(RGB(255, 255, 255));
+			return (HBRUSH)(m_hbrushDisplay->GetSafeHandle());
+		}
+	// Case for read-only display.
+	case CTLCOLOR_STATIC:
 		if (pWnd->GetDlgCtrlID() == IDC_EDIT_DISPLAY)
 		{
 			pDC->SetBkColor(m_crfDisplayBkColor);
