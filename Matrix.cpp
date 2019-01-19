@@ -161,3 +161,15 @@ void Matrix::ConvertToStringValues()
 		}
 	}
 }
+
+// Set different background color for row's headers.
+COLORREF Matrix::OnGetCellBkColor(int nRow, int nColumn)
+{
+	if (!nColumn)
+	{
+		COLORREF colRowHeaderBack = ::GetSysColor(COLOR_3DFACE);
+		return colRowHeaderBack;
+	}
+
+	return CMFCListCtrl::OnGetCellBkColor(nRow, nColumn);
+}

@@ -8,11 +8,12 @@
 
 #pragma once
 #include "afxcmn.h"
+#include "afxlistctrl.h"
 #include <memory>
 #include "CInPlaceEdit.h"
 #include "resource.h"
 
-class Matrix : public CListCtrl
+class Matrix : public CMFCListCtrl
 {
 public:
 	Matrix(int iRows = 4, int iColumns = 5)
@@ -25,6 +26,9 @@ public:
 	void Clear(CString csDefaultValue);
 	void ConvertToDigitValues(); // Prepare digits array for next multiplication.
 	void ConvertToStringValues(); // Convert digits array's values to strings and put back into the matrix control.
+
+	// Set different background color for row's headers.
+	virtual COLORREF OnGetCellBkColor(int nRow, int nColumn);
 
 public:
 	CEdit* m_pCEdit; // Used for hadling dialog's OnOK and OnCancel to prevent unexpected dialog closing.
