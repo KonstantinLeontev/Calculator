@@ -19,7 +19,7 @@ void Matrix::Initialize()
 
 	// Insert columns.
 	LVCOLUMN lvColumn;
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < m_iColumnsNo; i++)
 	{
 		lvColumn.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
 		// We don't need the first colummn's caption.
@@ -42,7 +42,7 @@ void Matrix::Initialize()
 
 	// Insert Items
 	LVITEM lvItem;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < m_iRowsNo; i++)
 	{
 		lvItem.mask = LVIF_TEXT;
 		lvItem.iItem = i;
@@ -59,6 +59,9 @@ void Matrix::Initialize()
 			SetItemText(i, j, csItemText);
 		}
 	}
+
+	// Make vector given size for digital values from list control.
+	m_vecDigitValues.resize(m_iRowsNo, std::vector<double>(m_iColumnsNo, 0));
 }
 
 void Matrix::Clear(CString csDefaultValue)
@@ -144,6 +147,7 @@ void Matrix::ConvertToDigitValues()
 		{
 			CString csTempValue = GetItemText(i, j);
 			m_arrDigitValues[i][j - 1] = _wtof(csTempValue); // Array's column starts with zero.
+			m_vecDigitValues[i][j - 1] = _wtof(csTempValue);
 		}
 	}
 }

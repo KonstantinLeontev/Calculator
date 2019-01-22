@@ -12,6 +12,7 @@
 #include <memory>
 #include "CInPlaceEdit.h"
 #include "resource.h"
+#include <vector>
 
 class Matrix : public CMFCListCtrl
 {
@@ -39,5 +40,7 @@ public:
 	int m_iColumnsNo;
 	// Array for double values of matrix's cells. Calculates right before each multiplication if there's any changes in matrix.
 	double m_arrDigitValues[4][4];
+	// Vector for dynamically changing matrix's size.
+	std::vector<std::vector<double> > m_vecDigitValues; 
 	bool m_bIsChanged;
 };
