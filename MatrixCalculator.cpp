@@ -15,6 +15,10 @@ void MatrixCalculator::DoDataExchange(CDataExchange * pDX)
 	DDX_Control(pDX, IDC_MATRIX_RESULT, m_clMatrixResult);
 	DDX_Control(pDX, IDC_EDIT_DEFAULT_VALUE_A, m_cEditDefaultValueA);
 	DDX_Control(pDX, IDC_EDIT_DEFAULT_VALUE_B, m_cEditDefaultValueB);
+	DDX_Control(pDX, IDC_EDIT_ROWSNO_A, m_cEditRowsNoA);
+	DDX_Control(pDX, IDC_EDIT_COLNO_A, m_cEditColNoA);
+	DDX_Control(pDX, IDC_EDIT_ROWSNO_B, m_cEditRowsNoB);
+	DDX_Control(pDX, IDC_EDIT_COLNO_B, m_cEditColNoB);
 }
 
 // Setup matrices here.
@@ -22,15 +26,27 @@ BOOL MatrixCalculator::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// Set matricies to zeroe values.
+	// Set matricies to default values.
 	m_clMatrixA.Initialize();
 	m_clMatrixB.Initialize();
 	m_clMatrixResult.Initialize();
+
 	// Default value for matrix cells.
 	m_csDefaultValueA = "0";
 	m_cEditDefaultValueA.SetWindowText(m_csDefaultValueA);
 	m_csDefaultValueB = "0";
 	m_cEditDefaultValueB.SetWindowText(m_csDefaultValueB);
+
+	// Default values for rows and columns numbers.
+	CString csDefaultValue;
+	csDefaultValue.Format(_T("%d"), m_clMatrixA.GetRowsNo());
+	m_cEditRowsNoA.SetWindowText(csDefaultValue);
+	csDefaultValue.Format(_T("%d"), m_clMatrixA.GetColumnsNo());
+	m_cEditColNoA.SetWindowText(csDefaultValue);
+	csDefaultValue.Format(_T("%d"), m_clMatrixB.GetRowsNo());
+	m_cEditRowsNoB.SetWindowText(csDefaultValue);
+	csDefaultValue.Format(_T("%d"), m_clMatrixB.GetColumnsNo());
+	m_cEditColNoB.SetWindowText(csDefaultValue);
 
 	return 0;
 }
@@ -45,6 +61,10 @@ BEGIN_MESSAGE_MAP(MatrixCalculator, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_EQUAL, &MatrixCalculator::OnBnClickedButtonEqual)
 	ON_EN_CHANGE(IDC_EDIT_DEFAULT_VALUE_A, &MatrixCalculator::OnEnChangeEditDefaultValueA)
 	ON_EN_CHANGE(IDC_EDIT_DEFAULT_VALUE_B, &MatrixCalculator::OnEnChangeEditDefaultValueB)
+	ON_EN_CHANGE(IDC_EDIT_ROWSNO_A, &MatrixCalculator::OnEnChangeEditRowsnoA)
+	ON_EN_CHANGE(IDC_EDIT_COLNO_A, &MatrixCalculator::OnEnChangeEditColnoA)
+	ON_EN_CHANGE(IDC_EDIT_ROWSNO_B, &MatrixCalculator::OnEnChangeEditRowsnoB)
+	ON_EN_CHANGE(IDC_EDIT_COLNO_B, &MatrixCalculator::OnEnChangeEditColnoB)
 END_MESSAGE_MAP()
 
 //------------------------------------------------------------------
@@ -228,4 +248,80 @@ void MatrixCalculator::Multiplication()
 
 	// Fill result matrix control with strings.
 	m_clMatrixResult.ConvertToStringValues();
+}
+
+// Set number of rows for Matrix A.
+void MatrixCalculator::OnEnChangeEditRowsnoA()
+{
+	ChangeEditRowsNo(&m_cEditRowsNoA, &m_clMatrixA);
+}
+
+// Set number of columns for Matrix A.
+void MatrixCalculator::OnEnChangeEditColnoA()
+{
+	ChangeEditColNo(&m_cEditColNoA, &m_clMatrixA);
+}
+
+// Set number of rows for Matrix B.
+void MatrixCalculator::OnEnChangeEditRowsnoB()
+{
+	ChangeEditRowsNo(&m_cEditRowsNoB, &m_clMatrixB);
+}
+
+// Set number of columns for Matrix B.
+void MatrixCalculator::OnEnChangeEditColnoB()
+{
+	ChangeEditColNo(&m_cEditColNoB, &m_clMatrixB);
+}
+
+// Set number of rows for Matrix.
+void MatrixCalculator::ChangeEditRowsNo(CEdit *pEditCtrl, Matrix *pMatrix)
+{
+	CString csTemp;
+	pEditCtrl->GetWindowText(csTemp);
+
+	int iNewRowsNo = _wtoi(csTemp);
+	// The number of rows in matrix must be > 0,
+	// and I've chose an arbitrary small value for the upper bound.
+	if ((iNewRowsNo > 0 && iNewRowsNo <= 20) && (pMatrix->GetRowsNo() != iNewRowsNo))
+	{
+		// Resize matrix.
+		pMatrix->ResizeByRowsNo(iNewRowsNo);
+	}
+	else
+	{
+		// Current input isn't valid, so we should change it back.
+		CString csCurRowsNo;
+		csCurRowsNo.Format(L"%d", pMatrix->GetRowsNo());
+		if (csTemp != csCurRowsNo)
+		{
+			pEditCtrl->SetWindowText(csCurRowsNo);
+		}
+	}
+}
+
+// Set number of columns for Matrix.
+void MatrixCalculator::ChangeEditColNo(CEdit *pEditCtrl, Matrix *pMatrix)
+{
+	CString csTemp;
+	pEditCtrl->GetWindowText(csTemp);
+
+	int iNewColNo = _wtoi(csTemp);
+	// The number of columns in matrix must be > 0,
+	// and I've chose an arbitrary small value for the upper bound.
+	if ((iNewColNo > 0 && iNewColNo <= 20) && (pMatrix->GetColumnsNo() != iNewColNo))
+	{
+		// Resize matrix.
+		pMatrix->ResizeByColsNo(iNewColNo);
+	}
+	else
+	{
+		// Current input isn't valid, so we should change it back.
+		CString csCurColumnsNo;
+		csCurColumnsNo.Format(L"%d", pMatrix->GetColumnsNo());
+		if (csTemp != csCurColumnsNo)
+		{
+			pEditCtrl->SetWindowText(csCurColumnsNo);
+		}
+	}
 }
