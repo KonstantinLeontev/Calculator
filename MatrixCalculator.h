@@ -58,8 +58,8 @@ protected:
 	Matrix m_clMatrixA;
 	Matrix m_clMatrixB;
 	Matrix m_clMatrixResult;
-	CString m_csDefaultValueA;
-	CString m_csDefaultValueB;
+	//CString m_csDefaultValueA;
+	//CString m_csDefaultValueB;
 
 	// Controls.
 	CEdit m_cEditDefaultValueA;

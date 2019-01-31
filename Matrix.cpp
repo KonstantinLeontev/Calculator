@@ -24,7 +24,7 @@ void Matrix::Initialize()
 	int iNewNo = 4; // Default for 4x4 matrix.
 	if (m_iColumnsNo)
 	{
-		// We have a custom size for our matrix.
+		// m_iColumnsNo != 0, so we have a custom size for our matrix.
 		if (m_iColumnsNo < 0)
 		{
 			// The number must be greater then zero.
@@ -36,7 +36,7 @@ void Matrix::Initialize()
 			m_iColumnsNo = 20;
 		}
 		iNewNo = m_iColumnsNo; // Get initial value.
-		m_iColumnsNo = 0; // And drop it to zero. 
+		m_iColumnsNo = 0; // And drop it to zero for correct work of AddColumns() method. 
 	}
 	// Insert columns. It's 5 - because first of them is a row's label.
 	AddColumns(iNewNo);
@@ -66,7 +66,7 @@ void Matrix::Initialize()
 	m_vecDigitValues.resize(m_iRowsNo, std::vector<double>(m_iColumnsNo, 0));
 }
 
-void Matrix::Clear(CString csDefaultValue)
+void Matrix::Clear(const CString &csDefaultValue)
 {
 	for (int i = 0; i < m_iRowsNo; i++)
 	{
@@ -169,12 +169,12 @@ void Matrix::ConvertToStringValues()
 }
 
 // Resize matrix when row's quantity was changed.
-void Matrix::ResizeByRowsNo(const int & iNewRowsNo)
+void Matrix::ResizeByRowsNo(const int & iNewRowsNo, const CString &csDefaultText)
 {
 	if (iNewRowsNo > m_iRowsNo)
 	{
 		// Add rows.
-		AddRows(iNewRowsNo);
+		AddRows(iNewRowsNo, csDefaultText);
 	}
 	else
 	{
@@ -184,12 +184,12 @@ void Matrix::ResizeByRowsNo(const int & iNewRowsNo)
 }
 
 // Resize matrix when column's quantity was changed.
-void Matrix::ResizeByColsNo(const int & iNewColNo)
+void Matrix::ResizeByColsNo(const int & iNewColNo, const CString &csDefaultText)
 {
 	if (iNewColNo > m_iColumnsNo)
 	{
 		// Add columns.
-		AddColumns(iNewColNo);
+		AddColumns(iNewColNo, csDefaultText);
 	}
 	else
 	{
@@ -198,7 +198,7 @@ void Matrix::ResizeByColsNo(const int & iNewColNo)
 	}
 }
 
-void Matrix::AddRows(const int & iNewRowsNo)
+void Matrix::AddRows(const int & iNewRowsNo, const CString &csDefaultText)
 {
 	// Insert Items
 	LVITEM lvItem;
@@ -214,10 +214,7 @@ void Matrix::AddRows(const int & iNewRowsNo)
 		// Set text for subitems.
 		for (int j = 1; j < m_iColumnsNo + 1; j++) // Column 0 is for row's label, so actual columns number is greater for 1.
 		{
-			CString csItemText = "";
-			csItemText.Format(L"%d", 0); // Fill with zeroes.
-										 // csItemText.Format(L"%d%d", i + 1, j); // Put the row and column numbers.
-			SetItemText(i, j, csItemText);
+			SetItemText(i, j, csDefaultText);
 		}
 	}
 	// Set new rows quantity.
@@ -229,7 +226,7 @@ void Matrix::RemoveRows(const int & iNewRowsNo)
 }
 
 // Create columns when matrix created or size was changed.
-void Matrix::AddColumns(const int &iNewColNo)
+void Matrix::AddColumns(const int &iNewColNo, const CString &csDefaultText)
 {
 	// Insert columns.
 	LVCOLUMN lvColumn;
@@ -252,6 +249,12 @@ void Matrix::AddColumns(const int &iNewColNo)
 		}
 		lvColumn.pszText = csColumnCaption.GetBuffer(csColumnCaption.GetLength());
 		InsertColumn(i, &lvColumn);
+
+		// Set text for new subitems in this column.
+		for (int j = 0; j < m_iRowsNo; j++)
+		{
+			SetItemText(j, i, csDefaultText);
+		}
 	}
 	// Set new col quantity.
 	m_iColumnsNo = iNewColNo;
@@ -312,4 +315,15 @@ int Matrix::GetRowsNo() const
 int Matrix::GetColumnsNo() const
 {
 	return m_iColumnsNo;
+}
+
+CString Matrix::GetDefaultValue() const
+{
+	return m_csDefaultValue;
+	;
+}
+
+void Matrix::SetDefaultValue(const CString & csDefaultValue)
+{
+	m_csDefaultValue = csDefaultValue;
 }

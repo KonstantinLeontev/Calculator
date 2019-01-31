@@ -18,27 +18,27 @@ class Matrix : public CMFCListCtrl
 {
 public:
 	Matrix(int iRows = 0, int iColumns = 0)
-		: m_pCEdit(NULL), m_iRow(0), m_iColumn(1), m_iRowsNo(iRows), m_iColumnsNo(iColumns), m_bIsChanged(FALSE) {}
+		: m_pCEdit(NULL), m_iRow(0), m_iColumn(1), m_iRowsNo(iRows), m_iColumnsNo(iColumns), m_bIsChanged(FALSE), m_csDefaultValue("0") {}
 
 	bool GetRowAndColumn(UINT nFlags, CPoint cpPoint);
 	CEdit* EditSubLabel();
 	void OnLButtonDown(UINT nFlags, CPoint cpPoint);
 	void Initialize(); // Makes columns and rows and set matrix cells to zeroes.
-	void Clear(CString csDefaultValue);
+	void Clear(const CString &csDefaultValue = "0");
 	void ConvertToDigitValues(); // Prepare digits array for next multiplication.
 	void ConvertToStringValues(); // Convert digits array's values to strings and put back into the matrix control.
 
 	// Resize matrix when row's quantity was changed.
-	void ResizeByRowsNo(const int &iNewRowsNo);
+	void ResizeByRowsNo(const int &iNewRowsNo, const CString &csDefaultText = "0");
 	// Resize matrix when column's quantity was changed.
-	void ResizeByColsNo(const int &iNewColNo);
+	void ResizeByColsNo(const int &iNewColNo, const CString &csDefaultText = "0");
 
 	// Create rows when matrix created or size was changed.
-	void AddRows(const int &iNewRowsNo);
+	void AddRows(const int &iNewRowsNo, const CString &csDefaultText = "0");
 	void RemoveRows(const int &iNewRowsNo);
 
 	// Create columns when matrix created or size was changed.
-	void AddColumns(const int &iNewColNo);
+	void AddColumns(const int &iNewColNo, const CString &csDefaultText = "0");
 	void RemoveColumns(const int &iNewColNo);
 
 	// Set different background color for row's headers.
@@ -53,6 +53,8 @@ public:
 	void SetColumnsNo(const int &iColNo);
 	int GetRowsNo() const;
 	int GetColumnsNo() const;
+	CString GetDefaultValue() const;
+	void SetDefaultValue(const CString &csDefaultValue);
 
 public:
 	CEdit* m_pCEdit;
@@ -69,4 +71,5 @@ private:
 	int m_iColumn;
 	int m_iRowsNo;
 	int m_iColumnsNo;
+	CString m_csDefaultValue; // Default value for subitems text.
 };

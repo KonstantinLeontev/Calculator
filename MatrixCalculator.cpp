@@ -32,10 +32,8 @@ BOOL MatrixCalculator::OnInitDialog()
 	m_clMatrixResult.Initialize();
 
 	// Default value for matrix cells.
-	m_csDefaultValueA = "0";
-	m_cEditDefaultValueA.SetWindowText(m_csDefaultValueA);
-	m_csDefaultValueB = "0";
-	m_cEditDefaultValueB.SetWindowText(m_csDefaultValueB);
+	m_cEditDefaultValueA.SetWindowText(m_clMatrixA.GetDefaultValue());
+	m_cEditDefaultValueB.SetWindowText(m_clMatrixB.GetDefaultValue());
 
 	// Default values for rows and columns numbers.
 	CString csDefaultValue;
@@ -183,19 +181,19 @@ void MatrixCalculator::OnCancel()
 // Button 'Clear A' - clear and set default value to matrix A.
 void MatrixCalculator::OnBnClickedButtonClearA()
 {
-	m_clMatrixA.Clear(m_csDefaultValueA);
+	m_clMatrixA.Clear(m_clMatrixA.GetDefaultValue());
 }
 
 // Button 'Clear B' - clear and set default value to matrix B.
 void MatrixCalculator::OnBnClickedButtonClearB()
 {
-	m_clMatrixB.Clear(m_csDefaultValueB);
+	m_clMatrixB.Clear(m_clMatrixB.GetDefaultValue());
 }
 
 // Button 'Clear Result' - clear and set default value '0' to result matrix.
 void MatrixCalculator::OnBnClickedButtonClearResult()
 {
-	m_clMatrixResult.Clear("0");
+	m_clMatrixResult.Clear();
 }
 
 // Button '=' - start matrix mutiplication.
@@ -207,13 +205,17 @@ void MatrixCalculator::OnBnClickedButtonEqual()
 // Edit box for A matrix default value.
 void MatrixCalculator::OnEnChangeEditDefaultValueA()
 {
-	m_cEditDefaultValueA.GetWindowText(m_csDefaultValueA);
+	CString csDefaultValue;
+	m_cEditDefaultValueA.GetWindowText(csDefaultValue);
+	m_clMatrixA.SetDefaultValue(csDefaultValue);
 }
 
 // Edit box for B matrix default value.
 void MatrixCalculator::OnEnChangeEditDefaultValueB()
 {
-	m_cEditDefaultValueB.GetWindowText(m_csDefaultValueB);
+	CString csDefaultValue;
+	m_cEditDefaultValueB.GetWindowText(csDefaultValue);
+	m_clMatrixB.SetDefaultValue(csDefaultValue);
 }
 
 //------------------------------------------------------------------
@@ -285,8 +287,10 @@ void MatrixCalculator::ChangeEditRowsNo(CEdit *pEditCtrl, Matrix *pMatrix)
 	// and I've chose an arbitrary small value for the upper bound.
 	if ((iNewRowsNo > 0 && iNewRowsNo <= 20) && (pMatrix->GetRowsNo() != iNewRowsNo))
 	{
+		// Get the current default value for this matrix.
+		csTemp = pMatrix->GetDefaultValue();
 		// Resize matrix.
-		pMatrix->ResizeByRowsNo(iNewRowsNo);
+		pMatrix->ResizeByRowsNo(iNewRowsNo, csTemp);
 	}
 	else
 	{
@@ -311,8 +315,10 @@ void MatrixCalculator::ChangeEditColNo(CEdit *pEditCtrl, Matrix *pMatrix)
 	// and I've chose an arbitrary small value for the upper bound.
 	if ((iNewColNo > 0 && iNewColNo <= 20) && (pMatrix->GetColumnsNo() != iNewColNo))
 	{
+		// Get the current default value for this matrix.
+		csTemp = pMatrix->GetDefaultValue();
 		// Resize matrix.
-		pMatrix->ResizeByColsNo(iNewColNo);
+		pMatrix->ResizeByColsNo(iNewColNo, csTemp);
 	}
 	else
 	{
