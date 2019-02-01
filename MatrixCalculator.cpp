@@ -225,21 +225,41 @@ void MatrixCalculator::OnEnChangeEditDefaultValueB()
 // Calculate Matrix A x Matrix B (4 x 4 at this moment).
 void MatrixCalculator::Multiplication()
 {
+	// Check if we actualy can do that.
+	if (!IsProductDefined())
+	{
+		return;
+	}
+
+	// Resize digit storages for A and B.
+	m_clMatrixA.ResizeDigitStorage();
+	m_clMatrixB.ResizeDigitStorage();
+
 	// Fill matrix arrays with digits first.
 	m_clMatrixA.ConvertToDigitValues();
 	m_clMatrixB.ConvertToDigitValues();
 
+	// Define the new size for result matrix.
+	int iNewRowsNo = m_clMatrixA.GetRowsNo();
+	int iNewColumnsNo = m_clMatrixB.GetColumnsNo();
+	int iColNo = m_clMatrixA.GetColumnsNo();
+
+	// Resize the result matrix.
+	m_clMatrixResult.ResizeByRowsNo(iNewRowsNo);
+	m_clMatrixResult.ResizeByColsNo(iNewColumnsNo);
+	m_clMatrixResult.ResizeDigitStorage();
+
 	// Perform actual multiplication with arrays.
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < iNewRowsNo; i++)
 	{
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < iNewColumnsNo; j++)
 		{
 			// Perform vector dot product.
-			m_clMatrixResult.m_arrDigitValues[i][j] = 0;
+			m_clMatrixResult.m_vecDigitValues[i][j] = 0;
 			// Multiply corresponding values.
-			for (int k = 0; k < 4; k++)
+			for (int k = 0; k < iColNo; k++)
 			{
-				m_clMatrixResult.m_arrDigitValues[i][j] += m_clMatrixA.m_arrDigitValues[i][k] * m_clMatrixB.m_arrDigitValues[k][j];
+				m_clMatrixResult.m_vecDigitValues[i][j] += m_clMatrixA.m_vecDigitValues[i][k] * m_clMatrixB.m_vecDigitValues[k][j];
 				/*m_clMatrixResult.m_arrDigitValues[i][j] = m_clMatrixA.m_arrDigitValues[i][0] * m_clMatrixB.m_arrDigitValues[0][j] +
 															m_clMatrixA.m_arrDigitValues[i][1] * m_clMatrixB.m_arrDigitValues[1][j] +
 															m_clMatrixA.m_arrDigitValues[i][2] * m_clMatrixB.m_arrDigitValues[2][j] +
@@ -250,6 +270,16 @@ void MatrixCalculator::Multiplication()
 
 	// Fill result matrix control with strings.
 	m_clMatrixResult.ConvertToStringValues();
+}
+
+bool MatrixCalculator::IsProductDefined()
+{
+	if (m_clMatrixA.GetColumnsNo() != m_clMatrixB.GetRowsNo())
+	{
+		MessageBox(L"The number of columns in matrix A must be equal the number of rows in matrix B.", L"A x B is not defined!", 1);
+		return false;
+	}
+	return true;
 }
 
 // Set number of rows for Matrix A.

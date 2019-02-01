@@ -140,16 +140,33 @@ CEdit* Matrix::EditSubLabel()
 // Calculations.
 //------------------------------------------------------------------
 
+// Resize vector for product calculation.
+void Matrix::ResizeDigitStorage()
+{
+	if (m_vecDigitValues.size() != m_iRowsNo)
+	{
+		m_vecDigitValues.resize(m_iRowsNo);
+	}
+
+	for (int i = 0; i < m_iRowsNo; i++)
+	{
+		if (m_vecDigitValues[i].size() != m_iColumnsNo)
+		{
+			m_vecDigitValues[i].resize(m_iColumnsNo);
+		}
+	}
+}
+
 // Prepare digits array for multiplication.
 void Matrix::ConvertToDigitValues()
 {
+	// Convert strings to digit values.
 	for (int i = 0; i < m_iRowsNo; i++)
 	{
-		for (int j = 1; j < m_iColumnsNo + 1; j++) // First column is a row's lable.
+		for (int j = 0; j < m_iColumnsNo; j++)
 		{
-			CString csTempValue = GetItemText(i, j);
-			m_arrDigitValues[i][j - 1] = _wtof(csTempValue); // Array's column starts with zero.
-			m_vecDigitValues[i][j - 1] = _wtof(csTempValue);
+			CString csTempValue = GetItemText(i, j + 1); // First column is a row's lable.
+			m_vecDigitValues[i][j] = _wtof(csTempValue); // Array's column starts with zero.
 		}
 	}
 }
@@ -159,11 +176,11 @@ void Matrix::ConvertToStringValues()
 {
 	for (int i = 0; i < m_iRowsNo; i++)
 	{
-		for (int j = 1; j < m_iColumnsNo + 1; j++) // First column is a row's lable.
+		for (int j = 0; j < m_iColumnsNo; j++)
 		{
 			CString csTempValue;
-			csTempValue.Format(L"%g", m_arrDigitValues[i][j - 1]); // Array's column starts with zero.
-			SetItemText(i, j, csTempValue);
+			csTempValue.Format(L"%g", m_vecDigitValues[i][j]);
+			SetItemText(i, j + 1, csTempValue); // First column - is a label.
 		}
 	}
 }
@@ -212,7 +229,7 @@ void Matrix::AddRows(const int & iNewRowsNo, const CString &csDefaultText)
 		lvItem.pszText = csRowCaption.GetBuffer(csRowCaption.GetLength());
 		InsertItem(&lvItem);
 		// Set text for subitems.
-		for (int j = 1; j < m_iColumnsNo + 1; j++) // Column 0 is for row's label, so actual columns number is greater for 1.
+		for (int j = 1; j <= m_iColumnsNo; j++) // Column 0 is for row's label, so actual columns number is greater for 1.
 		{
 			SetItemText(i, j, csDefaultText);
 		}
@@ -228,6 +245,7 @@ void Matrix::RemoveRows(const int & iNewRowsNo)
 	{
 		DeleteItem(i);
 	}
+	// Set new rows quantity.
 	m_iRowsNo = iNewRowsNo;
 }
 
@@ -273,6 +291,7 @@ void Matrix::RemoveColumns(const int & iNewColNo)
 	{
 		DeleteColumn(i);
 	}
+	// Set new col quantity.
 	m_iColumnsNo = iNewColNo;
 }
 

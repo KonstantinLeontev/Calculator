@@ -32,6 +32,7 @@ protected:
 	void OnCancel(); // Prevents dialog from colsing when ESC pressed.
 	void OnOK(); // Prevents dialog from colsing when Enter pressed.
 	void Multiplication(); // Calculate Matrix A x Matrix B.
+	bool IsProductDefined(); // Check if A x B is defined.
 
 	// Get new matrix rows number from edit control and resize matrix.
 	void ChangeEditRowsNo(CEdit *pEditCtrl, Matrix *pMatrix);
@@ -58,8 +59,6 @@ protected:
 	Matrix m_clMatrixA;
 	Matrix m_clMatrixB;
 	Matrix m_clMatrixResult;
-	//CString m_csDefaultValueA;
-	//CString m_csDefaultValueB;
 
 	// Controls.
 	CEdit m_cEditDefaultValueA;

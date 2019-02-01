@@ -28,6 +28,9 @@ public:
 	void ConvertToDigitValues(); // Prepare digits array for next multiplication.
 	void ConvertToStringValues(); // Convert digits array's values to strings and put back into the matrix control.
 
+	// Resize vector for product calculation.
+	void ResizeDigitStorage();
+
 	// Resize matrix when row's quantity was changed.
 	void ResizeByRowsNo(const int &iNewRowsNo, const CString &csDefaultText = "0");
 	// Resize matrix when column's quantity was changed.
