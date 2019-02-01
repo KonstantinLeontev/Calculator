@@ -221,8 +221,14 @@ void Matrix::AddRows(const int & iNewRowsNo, const CString &csDefaultText)
 	m_iRowsNo = iNewRowsNo;
 }
 
+// Remove rows when the new rows number is less than existent.
 void Matrix::RemoveRows(const int & iNewRowsNo)
 {
+	for (int i = m_iRowsNo; i >= iNewRowsNo; i--)
+	{
+		DeleteItem(i);
+	}
+	m_iRowsNo = iNewRowsNo;
 }
 
 // Create columns when matrix created or size was changed.
@@ -260,8 +266,14 @@ void Matrix::AddColumns(const int &iNewColNo, const CString &csDefaultText)
 	m_iColumnsNo = iNewColNo;
 }
 
+// Removes columns if the new column's number is less then existent.
 void Matrix::RemoveColumns(const int & iNewColNo)
 {
+	for (int i = m_iColumnsNo; i > iNewColNo; i--)
+	{
+		DeleteColumn(i);
+	}
+	m_iColumnsNo = iNewColNo;
 }
 
 // Set different background color for row's headers.
